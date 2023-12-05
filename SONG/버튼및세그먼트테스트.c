@@ -18,7 +18,6 @@
 #define NUM_SEGS 7                // 세븐 세그먼트 세그먼트 개수
 int segPins[NUM_SEGS] = {SEG_A, SEG_B, SEG_C, SEG_D, SEG_E, SEG_F, SEG_G, SEG_H};
 
-int brightness = 0;               // 현재 밝기 레벨
 int levels[] = {0, 100, 200};     // 밝기의 3 단계
 int currentMode = 0;              // 현재 모드
 int modeSetting = 0;              // 현재 모드의 세부 설정
@@ -97,7 +96,7 @@ void setup() {
     }
 
     prevEncoderClkState = digitalRead(ENCODER_CLK);
-    setBrightness(brightness);
+    setBrightness(currentMode);
 }
 
 void displaySevenSegment(int num) {
