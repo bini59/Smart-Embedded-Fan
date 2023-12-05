@@ -1,9 +1,3 @@
-/*
-컴파일시
-gcc -o 블루투스_서버 블루투스_서버.c -lrt -lwiringPi
-실행시
-./블루투스_서버
-*/
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -45,6 +39,10 @@ bool isExistMode(const int fd_serial, const char *isExistmode) {
     char output[50];
 
     switch (mode) {
+        case 'Q':
+            sprintf(output, "종료\n");
+            serialWriteString(fd_serial, output);
+            return true;
         case 'T':
             if(value == AUTO)
                 sprintf(output, "타이머모드 : 자동\n");
