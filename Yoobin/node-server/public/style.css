@@ -1,0 +1,133 @@
+#corner {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    right: 0;
+    bottom: 0;
+    cursor: nwse-resize;
+  }
+
+
+  /**
+  class : power-level-btn active
+
+  */
+
+.power-level-btn.active {
+    background-color: #4CAF50;
+    color: white;
+  }
+
+  /**
+<label class="switch">
+  <input id="rotation-switch" type="checkbox" checked="">
+  <span class="slider round"></span>
+</label>
+*/  
+
+.switch {  
+  position: relative;
+  display: inline-block;
+  width: 60px;
+  height: 34px;
+}
+      
+.switch input { 
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #4CAF50;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #4CAF50;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+
+
+header{
+  border-radius: 0.25rem;
+}
+
+@media (hover: hover) {
+  .power-level-btn:hover, .timer-btn:hover {
+    background-color: rgb(209 213 219);
+  }
+}
+
+
+/**
+<div class="mb-4">
+    <h3 class="font-semibold mb-2">타이머</h3>
+    <p class="text-sm mb-2">선풍기의 타이머를 설정</p>
+    <p id="timer-display" class="mt-2">남은 시간 : 0분</p>
+    <input id="timer-input" type="number" min="0" class="border rounded py-2 px-4" placeholder="분 단위로 입력하세요.">
+    <button id="timer-btn" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">설정</button>
+</div>
+
+*/
+
+#timer-display {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  /* font-weight: 500; */
+  letter-spacing: 0.0178571429em;
+  margin-bottom: 0.5rem;
+}
+
+#timer-input {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  /* font-weight: 500; */
+  letter-spacing: 0.0178571429em;
+}
+
+#timer-btn {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  /* font-weight: 500; */
+  letter-spacing: 0.0178571429em;
+}
+
