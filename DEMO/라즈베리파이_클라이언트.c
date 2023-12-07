@@ -34,8 +34,8 @@ volatile int prevEncoderClkState;
 volatile int prevEncoderSwState = HIGH;
 volatile int prevSwitchModeState = HIGH;
 
-int sevenSeg[11][NUM_SEGS] = {
-     {0, 0, 0, 0, 0, 0, 0, 0}   //OFF
+int sevenSeg[12][NUM_SEGS] = {
+     {1, 1, 1, 1, 1, 1, 0, 0}   //0
     ,{0, 1, 1, 0, 0, 0, 0, 0}   //1
     ,{1, 1, 0, 1, 1, 0, 1, 0}   //2
     ,{1, 1, 1, 1, 0, 0, 1, 0}   //3
@@ -46,6 +46,7 @@ int sevenSeg[11][NUM_SEGS] = {
     ,{1, 1, 1, 1, 1, 1, 1, 0}   //8
     ,{1, 1, 1, 1, 0, 1, 1, 0}   //9
     ,{1, 1, 1, 0, 1, 1, 1, 0}   //A : 자동
+    ,{0, 0, 0, 0, 0, 0, 0, 0}   //OFF
 };
 
 // 함수 선언
@@ -84,11 +85,15 @@ void updateModeSetting() {
 
 void updateSevenSegmentDisplay() {
     int segmentValue;
-    if (currentMode == 0 || currentMode == 1) {
+    if (currentMode == 0) {
         if (modeSetting < 10) segmentValue = 10; // A
-        else if (modeSetting < 20) segmentValue = 1; // 1
-        else if (modeSetting < 30) segmentValue = 2; // 2
-        else segmentValue = 3; // 3
+        else if (modeSetting < 20) segmentValue = 0; // 0
+        else if (modeSetting < 30) segmentValue = 1; // 1
+        else segmentValue = 2; // 2
+    } else if (currentMode == 1) {
+        if (modeSetting < 13) segmentValue = 10; // A
+        else if (modeSetting < 26) segmentValue = 0; // 0
+        else segmentValue = 1; // 1
     } else if (currentMode == 2) {
         if (modeSetting < 4) segmentValue = 1; // 1
         else if (modeSetting < 8) segmentValue = 2; // 2
@@ -124,9 +129,12 @@ void selectMode(int mode, int setting) {
     }
 
     // 접미사 설정
-    if (mode == 0 || mode == 1) {
+    if (mode == 0) {
         if (setting < 10) segmentValue = 'A'; // 'A'
-        else segmentValue = (setting < 20) ? '1' : ((setting < 30) ? '2' : '3'); // '1', '2', '3'
+        else segmentValue = (setting < 20) ? '0' : ((setting < 30) ? '1' : '2'); // '0', '1', '2'
+    } else if (mode == 1) {
+        if (setting < 13) segmentValue = 'A'; // 'A'
+        else segmentValue = (setting < 26) ? '0': '1'; // '1', '2'
     } else if (mode == 2) { // T 모드
         if (setting < 4) segmentValue = '1';
         else if (setting < 8) segmentValue = '2';
@@ -148,7 +156,7 @@ void selectMode(int mode, int setting) {
 }
 
 void cleanup() {
-    displaySevenSegment(0); // 7_세그먼트 꺼짐
+    displaySevenSegment(11); // 7_세그먼트 꺼짐
     pwmWrite(LED_PIN, 0); // LED 꺼짐
     printf("\n프로그램 종료\n");
     exit(0); // 프로그램 종료
@@ -161,7 +169,7 @@ void setup() {
     }
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_port = htons(PORT);
-    if(inet_pton(AF_INET, "172.20.10.7", &serv_addr.sin_addr) <= 0) {
+    if(inet_pton(AF_INET, "172.20.10.13", &serv_addr.sin_addr) <= 0) {
         printf("\nInvalid address/ Address not supported \n");
         exit(EXIT_FAILURE);
     }
