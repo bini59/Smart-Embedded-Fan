@@ -4,11 +4,19 @@ document.addEventListener('DOMContentLoaded', function () {
   const timerInput = document.getElementById('timer-input');
   const timerDisplay = document.getElementById('timer-display');
   const timerBtn = document.getElementById('timer-btn');
+  const autoBtn = document.querySelectorAll('.auto-btn');
 
   powerLevelBtns.forEach((btn, index) => {
     btn.addEventListener('click', () => {
       powerLevelBtns.forEach((btn) => btn.classList.remove('active'));
       btn.classList.add('active');
+    });
+  });
+
+  autoBtn.forEach((btn, index) => {
+    btn.addEventListener('click', () => {
+      if (btn.classList.contains('active')) btn.classList.remove('active');
+      else btn.classList.add('active');
     });
   });
 
