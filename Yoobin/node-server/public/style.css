@@ -13,7 +13,7 @@
 
   */
 
-.power-level-btn.active {
+.power-level-btn.active, .auto-btn.active {
     background-color: #4CAF50;
     color: white;
   }
@@ -50,6 +50,8 @@
   transition: .4s;
 }
 
+
+
 .slider:before {
   position: absolute;
   content: "";
@@ -61,6 +63,7 @@
   -webkit-transition: .4s;
   transition: .4s;
 }
+
 
 input:checked + .slider {
   background-color: #4CAF50;
@@ -131,3 +134,14 @@ header{
   letter-spacing: 0.0178571429em;
 }
 
+
+
+.switches-section {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.switches-section .switch-wrapper {
+  margin-right: 1rem;
+  margin-bottom: 1rem;
+}

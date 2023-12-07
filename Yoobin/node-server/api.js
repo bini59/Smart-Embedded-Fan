@@ -26,6 +26,7 @@ router.get('/power', (req, res) => {
 
 router.post('/power', (req, res) => {
   const power = req.body.power;
+  const auto = req.body.auto;
   try{
     setData('power', power);
   }
@@ -42,6 +43,7 @@ router.get('/rotation', (req, res) => {
 
 router.post('/rotation', (req, res) => {
   const rotation = req.body.rotation;
+  const auto = req.body.auto;
   try{
     setData('rotation', rotation ? 1 : 0);
   }
