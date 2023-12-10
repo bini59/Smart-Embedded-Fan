@@ -29,10 +29,14 @@ const char* name = "/posix_mq";
 char mode;
 int amount;
 
+float distance = -1;
+float humidity = -1;
+float temperature = -1;
+
 pthread_t rotate_thread;
-pthread_t tid_dht;
+pthread_t receive_thread;
 pthread_mutex_t lock;
-pthread_mutex_t lock_d;
+pthread_mutex_t lock_receive;
 bool rotate_thread_running = false;
 float sharedDistance = 0.0;
 
@@ -147,46 +151,55 @@ void fork_dht_sensor() {
     }
 }
 
-void *read_mq_data(void *arg) {
+void *recv_sensor_data() {
     mqd_t mq;
     struct mq_attr attr;
-    char buffer[BUFSIZ];
-    int n;
+    char buf[BUFSIZ];
+    int str_len;
 
-    // 메시지 큐 속성 설정
     attr.mq_flags = 0;
     attr.mq_maxmsg = 10;
     attr.mq_msgsize = BUFSIZ;
     attr.mq_curmsgs = 0;
 
-    // 메시지 큐 열기
-    mq = mq_open("/posix_mq", O_RDONLY | O_CREAT, 0644, &attr);
-    if (mq == -1) {
+    mq = mq_open("/posix_sensor", O_CREAT | O_RDONLY, 0644, &attr);
+        if (mq == -1) {
         perror("메시지 큐 열기 실패");
         return NULL;
     }
 
-    while (1) {
-        // 메시지 큐로부터 데이터 읽기
-        n = mq_receive(mq, buffer, BUFSIZ, NULL);
-        if (n == -1) {
+    while(1) {
+        str_len = mq_receive(mq, buf, sizeof(buf), NULL);
+        if (str_len == -1) {
             perror("메시지 큐 읽기 실패");
             continue;
         }
 
-        buffer[n] = '\0'; // 문자열 종료 지정
-
-        // 수신된 데이터 처리
-        printf("Received: %s\n", buffer);
-
-        // 여기서 센서 데이터에 따른 추가적인 처리를 구현할 수 있습니다.
-        // 예: 버퍼에서 센서 데이터를 파싱하고 이를 기반으로 특정 작업 수행
+        pthread_mutex_lock(&lock_receive);
+        buf[str_len] = '\0';
+        if (str_len = 'D') {
+            distance = atof(buf + 2);
+        } 
+        else if (str_len = 'H') {
+            sscanf(buf + 2, "%f %f", &humidity, &temperature);
+        }
+        pthread_mutex_unlock(&lock_receive);
+        usleep(1000000); // 1초 대기
     }
 
     mq_close(mq);
     return NULL;
 }
 
+
+void *run_motor() {
+
+    while(1) {
+        if (distance < -1 || humidity < -1 || temperature < -1) continue;
+
+
+    }
+}
 
 int main(int argc, char **argv) {
     mqd_t mq;
@@ -206,7 +219,7 @@ int main(int argc, char **argv) {
     fork_dht_sensor();
 
     // 메시지 큐 읽기 스레드 생성
-    pthread_create(&read_thread, NULL, read_mq_data, NULL);
+    pthread_create(&receive_thread, NULL, recv_sensor_data, NULL);
     
     mq = mq_open(name, O_CREAT | O_RDONLY, 0644, &attr);
     while(1) {

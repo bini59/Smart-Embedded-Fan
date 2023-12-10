@@ -49,14 +49,14 @@ int main() {
     }
 
     mqd_t mq;
-    mq = mq_open("/posix_mq", O_WRONLY);
+    mq = mq_open("/posix_sensor", O_WRONLY);
     char msg[128];
 
     while (1) {
         read_dht_data();
         if ((data[4] == ((data[0] + data[1] + data[2] + data[3]) & 0xFF)) && 
             (data[0] != 0 || data[2] != 0)) {
-            sprintf(msg, "Humidity: %d.%d %% Temperature: %d.%d C", 
+            sprintf(msg, "H %d.%d %d.%d", 
                 data[0], data[1], data[2], data[3]);
             mq_send(mq, msg, strlen(msg), 0);
         } else {

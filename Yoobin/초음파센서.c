@@ -45,12 +45,12 @@ int main() {
     delay(30);
 
     mqd_t mq;
-    mq = mq_open("/posix_mq", O_WRONLY);
+    mq = mq_open("/posix_sensor", O_WRONLY);
     char msg[128];
 
     while (1) {
         float distance = measureDistance();
-        sprintf(msg, "Distance: %f", distance);
+        sprintf(msg, "D %f", distance);
         mq_send(mq, msg, strlen(msg), 0);
         usleep(500000); // 0.5초 대기
     }
