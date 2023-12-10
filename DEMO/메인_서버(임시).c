@@ -20,7 +20,7 @@ sudo ./Server
 #define IN_B 19
 #define MINUTE 600 // 10분단위로 하기 ,, T1 -> 10분 타이머
 #define TEST_TIME 10 // 테스트용 10초 ,, T1 -> 10초 타이머
-#define 
+#define AUTO 17
 
 int data[5] = {0, 0, 0, 0, 0};
 int pin_arr[4] = {12, 16, 20, 21};
@@ -167,6 +167,7 @@ void *timer_func(){
     }
 
     setMotor(0, 0);
+    auto_rotate(false);
 
     return NULL;
 }
@@ -274,6 +275,26 @@ int calculate_step(float distance, float humidity, float temperature) {
     return total;
 }
 
+void auto_rotate(bool flag){
+    char buffer[BUFSIZ];
+    if(flag)
+        sprintf(buffer, "%c", '1');
+    else
+        sprintf(buffer, "%c", '0');
+    mqd_t mq_R;
+    const char* mq_name = "/posix_RA";
+    mq_R = mq_open(mq_name, O_WRONLY);
+    if(mq_R == (mqd_t)-1) {
+        perror("mq_open");
+        exit(EXIT_FAILURE);
+    }
+    // 메시지 큐로 데이터 전송
+    if(mq_send(mq_R, buffer, strlen(buffer), 0) == -1) {
+        perror("mq_send");
+    }
+    // 메시지 큐 닫기
+    mq_close(mq_R);
+}
 void *run_motor() {
     int step = 0;
 
@@ -303,7 +324,7 @@ void command_timer() {
 }
 
 void command_rotate() {
-    // rotate는 스레드로 실행
+    auto_rotate(false);
     if (amount == 1) {
         if (!rotate_thread_running) {
             pthread_create(&rotate_thread, NULL, rotate, NULL);
@@ -313,6 +334,13 @@ void command_rotate() {
             rotate_thread_running = false;
             pthread_join(rotate_thread, NULL);
         }
+    } else if(amount == AUTO){
+        if (rotate_thread_running) {
+            rotate_thread_running = false;
+            pthread_join(rotate_thread, NULL);
+        }
+        auto_rotate(true);
+
     }
 }
 
