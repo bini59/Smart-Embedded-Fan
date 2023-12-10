@@ -35,9 +35,11 @@ float temperature = -1;
 
 pthread_t rotate_thread;
 pthread_t receive_thread;
+pthread_t motor_thread;
 pthread_mutex_t lock;
 pthread_mutex_t lock_receive;
 bool rotate_thread_running = false;
+bool motor_thread_running = false;
 float sharedDistance = 0.0;
 
 void setMotor(int speed, int direction) {
@@ -201,6 +203,41 @@ void *run_motor() {
     }
 }
 
+void command_rotate() {
+    // rotate는 스레드로 실행
+    if (amount == 1) {
+        if (!rotate_thread_running) {
+            pthread_create(&rotate_thread, NULL, rotate, NULL);
+        }
+    } else if(amount == 0) {
+        if (rotate_thread_running) {
+            rotate_thread_running = false;
+            pthread_join(rotate_thread, NULL);
+        }
+    }
+}
+
+void command_power() {
+    if (amount == 0) {
+        setMotor(0, 0);
+        if (motor_thread_running) {
+            motor_thread_running = false;
+            pthread_join(motor_thread, NULL);
+        }
+    } else if(amount == 1) {
+        setMotor(200, 1);
+    } else if(amount == 2) {
+        setMotor(300, 1);
+    } else if(amount == 3) {
+        setMotor(400, 1);
+    } else if(amount == AUTO) {
+        if (!motor_thread_running) {
+            motor_thread_running = true;
+            pthread_create(&motor_thread, NULL, run_motor, NULL);
+        }
+    }
+}
+
 int main(int argc, char **argv) {
     mqd_t mq;
     struct mq_attr attr;
@@ -232,16 +269,12 @@ int main(int argc, char **argv) {
             continue; // 범위를 벗어난 경우 반복 건너뛰기
         }
 
-        // rotate는 스레드로 실행
-        if (mode == 'R' && amount == 1) {
-            if (!rotate_thread_running) {
-                pthread_create(&rotate_thread, NULL, rotate, NULL);
-            }
-        } else if(mode == 'R' && amount == 0) {
-            if (rotate_thread_running) {
-                rotate_thread_running = false;
-                pthread_join(rotate_thread, NULL);
-            }
+        if (mode == 'R') {
+            command_rotate();
+        } else if(mode == 'P') {
+            command_power();
+        } else if(mode == 'T') {
+            // setMotor(amount, 0);
         }
         usleep(100000); // 0.1초 대기
     }
