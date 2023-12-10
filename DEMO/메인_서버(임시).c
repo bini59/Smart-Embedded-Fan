@@ -1,6 +1,6 @@
 /*
 컴파일시
-gcc -o Server Server.c -lrt -lwiringPi
+gcc -o Server Server.c -lrt -lwiringPi -lpthread
 실행시
 sudo ./Server
 */
@@ -14,31 +14,34 @@ sudo ./Server
 #include <wiringPi.h>
 #include <pthread.h>
 #include <sys/time.h>
-
-
 #include <stdint.h>
 
 #define IN_A 18
 #define IN_B 19
-#define AUTO 17
+#define MINUTE 600 // 10분단위로 하기 ,, T1 -> 10분 타이머
+#define TEST_TIME 10 // 테스트용 10초 ,, T1 -> 10초 타이머
+#define 
 
-#define DELAY_MS 1000  // 데이터 읽기 사이의 지연 시간 
 int data[5] = {0, 0, 0, 0, 0};
 int pin_arr[4] = {12, 16, 20, 21};
 int one_two_phase[8][4] = {{1,0,0,0}, {1,1,0,0}, {0,1,0,0}, {0,1,1,0}, {0,0,1,0}, {0,0,1,1}, {0,0,0,1},{1,0,0,1}};
 const char* name = "/posix_mq";
 char mode;
 int amount;
-
 float distance = -1;
 float humidity = -1;
 float temperature = -1;
+int timer_duration = 0;  
 
 pthread_t rotate_thread;
 pthread_t receive_thread;
 pthread_t motor_thread;
+pthread_t timer_thread;
+
 pthread_mutex_t lock;
 pthread_mutex_t lock_receive;
+
+bool timer_thread_running = false;
 bool rotate_thread_running = false;
 bool motor_thread_running = false;
 float sharedDistance = 0.0;
@@ -75,7 +78,7 @@ bool isOutOfRange(char mode, int amount) {
         case 'P':
             if(amount == AUTO)
                 return false;
-            return (amount < 0 || amount > 2);
+            return (amount < 0 || amount > 3);
         case 'R':
             if(amount == AUTO)
                 return false;
@@ -140,6 +143,33 @@ void *rotate(void *arg) {
     return NULL;
 }
 
+void *timer_func(){
+    timer_thread_running = true;
+    int elapsed_time = 0;
+    printf("timer ON : %d\n", timer_duration);
+    while (elapsed_time < timer_duration *  TEST_TIME && timer_thread_running) {
+        usleep(1000000);  // 1초 대기
+        elapsed_time++;
+        
+    }
+
+    // PA 인 경우 -> P0
+    if (motor_thread_running) {
+        printf("thread is terminated!\n");
+        motor_thread_running = false;
+        motor_thread_flag = false;
+        pthread_join(motor_thread, NULL);
+    }
+    // Rotate Mode OFF
+    if (rotate_thread_running) {
+        rotate_thread_running = false;
+        pthread_join(rotate_thread, NULL);
+    }
+
+    setMotor(0, 0);
+
+    return NULL;
+}
 void fork_ultrasonic_sensor() {
     pid_t pid = fork();
     if (pid == 0) {
@@ -200,37 +230,6 @@ void *recv_sensor_data() {
     return NULL;
 }
 
-
-
-/*
-
-
- 1. ㅇㄷ
- ~15 0
- 15~20 1
- 20~25 2
- 25~30 3
- 30~35 4
- 35~  600
-
- 2. ㅅㄷ
- ~20 0
- 20~30 1
- 30~40 2
- 40~50 3 
- 50~60 4
- 60~ 600
-
- 3. ㄱㄹ
- ~10 0
- 10~30 1
- 30~50 2
- 50~70 3
- 70~90 4
- 90~ 600
-
-*/
-
 int calculate_step(float distance, float humidity, float temperature) {
     int step_temp = 0, step_hum = 0, step_dist = 0;
 
@@ -271,14 +270,11 @@ int calculate_step(float distance, float humidity, float temperature) {
         return 12;
 
     // printf("step : %d %d %d\n", step_dist, step_hum, step_temp);
-    // Return the highest step value
     int total = step_dist + step_hum + step_temp;
     return total;
 }
 
-
 void *run_motor() {
-
     int step = 0;
 
     while(motor_thread_flag) {
@@ -294,6 +290,16 @@ void *run_motor() {
     }
 
     return NULL;
+}
+
+void command_timer() {
+    if (timer_thread_running) {
+        // 기존 타이머가 실행 중이면 중지
+        timer_thread_running = false;
+        pthread_join(timer_thread, NULL);
+    }
+    timer_duration = amount;
+    pthread_create(&timer_thread, NULL, timer_func, NULL);
 }
 
 void command_rotate() {
@@ -324,6 +330,10 @@ void command_power() {
 
     if (amount == 0) {
         setMotor(0, 0);
+        if (rotate_thread_running) {
+            rotate_thread_running = false;
+            pthread_join(rotate_thread, NULL);
+        }
     } else if(amount == 1) {
         setMotor(200, 0);
     } else if(amount == 2) {
@@ -375,7 +385,7 @@ int main(int argc, char **argv) {
         } else if(mode == 'P') {
             command_power();
         } else if(mode == 'T') {
-            // setMotor(amount, 0);
+            command_timer();
         }
         usleep(100000); // 0.1초 대기
     }
