@@ -19,7 +19,7 @@ const filePath = './data';
  */
 
 function getData(type) {
-  const types = ['power', 'rotation', 'timer']
+  const types = ['power', 'rotation', 'timer', 'powerAuto', 'rotateAuto']
 
   const data = fs.readFileSync(filePath, 'utf8');
   const lines = data.split('\n');
@@ -49,6 +49,11 @@ function setData(type, value) {
   lines[index] = value;
   const newData = lines.join('\n');
   fs.writeFileSync(filePath, newData);
+}
+
+
+function runProcess(type, mode) {
+
 }
 
 module.exports = {

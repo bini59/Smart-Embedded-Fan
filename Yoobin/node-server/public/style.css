@@ -13,10 +13,16 @@
 
   */
 
-.power-level-btn.active, .auto-btn.active {
+.power-level-btn.active, .auto-btn.active, .timer-level-btn.active {
     background-color: #4CAF50;
     color: white;
   }
+
+.power-level-btn.disabled{
+  background-color: #D1D5DB;
+  color: #9CA3AF;
+  cursor: not-allowed;
+}
 
   /**
 <label class="switch">

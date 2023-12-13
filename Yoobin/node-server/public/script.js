@@ -1,39 +1,167 @@
-document.addEventListener('DOMContentLoaded', function () {
-  const powerLevelBtns = document.querySelectorAll('.power-level-btn');
-  const rotationSwitch = document.getElementById('rotation-switch');
-  const timerInput = document.getElementById('timer-input');
-  const timerDisplay = document.getElementById('timer-display');
-  const timerBtn = document.getElementById('timer-btn');
-  const autoBtn = document.querySelectorAll('.auto-btn');
+const initBtns = () => {
 
-  powerLevelBtns.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      powerLevelBtns.forEach((btn) => btn.classList.remove('active'));
-      btn.classList.add('active');
+  // power 버튼 초기화
+  const initPowerBtns = () => {
+
+    const powerAutoSwitch = document.getElementById('power-auto-switch');
+
+    const powerBtns = document.querySelectorAll('.power-level-btn');
+    powerBtns.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        // 자동 모드일 시 버튼 클릭 무시
+        if (powerAutoSwitch.checked) return;
+        powerBtns.forEach((btn) => btn.classList.remove('active'));
+        btn.classList.add('active');
+      });
+    })
+
+    // 현재 파워 상태 가져오기
+    fetch('/api/v1/power')
+      .then((res) => res.json())
+      .then((power) => {
+        powerBtns[power - 1].classList.add('active');
+      });
+      
+
+    // 파워 버튼 클릭 시
+    powerBtns.forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        // 자동 모드일 시 버튼 클릭 무시
+        if (powerAutoSwitch.checked) return;
+        const power = index + 1;
+        fetch('/api/v1/power', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ power }),
+        });
+      });
     });
-  });
 
-  autoBtn.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      if (btn.classList.contains('active')) btn.classList.remove('active');
-      else btn.classList.add('active');
+    console.log('init power btn is done!');
+  }
+
+
+  const initRotationBtn = () => {
+    const rotationSwitch = document.getElementById('rotation-switch');
+
+    // 현재 회전 상태 가져오기
+    fetch('/api/v1/rotation')
+      .then((res) => res.json())
+      .then((rotation) => {
+        rotationSwitch.checked = rotation;
+      });
+
+    // 회전 버튼 클릭 시
+    rotationSwitch.addEventListener('change', () => {
+      const rotation = rotationSwitch.checked;
+      fetch('/api/v1/rotation', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ rotation }),
+      });
     });
-  });
+  }
 
-  rotationSwitch.addEventListener('change', () => {
-    
-  });
+  const initTimerBtn = () => {
+    const timerBtn = document.querySelectorAll('.timer-level-btn');
 
-  timerBtn.addEventListener('click', () => {
-    let value = timerInput.value;
-    if (value === '') {
-      value = 0;
-    }
+    timerBtn.forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        timerBtn.forEach((btn) => btn.classList.remove('active'));
+        btn.classList.add('active');
+      })
+    });
 
-    timerInput.value = '';
-    timerDisplay.innerText = `남은 시간 : ${value}분`;
-  });
-});
+    timerBtn.forEach((btn, index) => {
+      btn.addEventListener('click', () => {
+        const timer = index + 1
+        fetch('/api/v1/timer', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({timer}),
+        })
+      })
+    });
+  }
+
+  const initAutoBtn = () => {
+    const autoBtns = document.querySelectorAll('.auto-check');
+    const powerBtns = document.querySelectorAll('.power-level-btn');
+
+    const powerAutoSwitch = document.getElementById('power-auto-switch');
+    const roatateAutoSwitch = document.getElementById('rotation-auto-switch');
+
+    fetch('/api/v1/auto/power')
+    .then((res) => res.json())
+    .then((data) => {
+        powerAutoSwitch.checked = data == 1 ? true : false;
+        if (data == 1) powerBtns.forEach((subBtn) => subBtn.classList.add('disabled'));
+    })
+
+    fetch('/api/v1/auto/rotate')
+    .then((res) => res.json())
+    .then((data) => {
+        roatateAutoSwitch.checked = data == 1 ? true : false;
+      })
+      
+    // auto btn interactive event
+    autoBtns.forEach((btn) => {
+      btn.addEventListener('change', (e)=>{
+        let target = e.target;
+        if(btn.id !== 'power-auto-switch') return;
+  
+        if(target.checked) powerBtns.forEach((subBtn) => subBtn.classList.add('disabled'));
+        else powerBtns.forEach((subBtn) => subBtn.classList.remove('disabled'));
+      })
+    })
+
+    powerAutoSwitch.addEventListener('click', (e) => {
+      const auto  = e.target.checked == true ? 1 : 0;
+      fetch('/api/v1/auto/power', {
+        method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ auto }),
+      })
+    });
+
+    roatateAutoSwitch.addEventListener('click', (e) => {
+      const auto  = e.target.checked == true ? 1 : 0;
+      fetch('/api/v1/auto/rotate', {
+        method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ auto }),
+      })
+    })
+  }
+
+  return [
+    initPowerBtns, initRotationBtn, initTimerBtn, initAutoBtn
+  ]
+}
+
+const init = () => {
+  const initInteractiveMethods = initBtns();
+  initInteractiveMethods.forEach((method)=>method());
+}
+
+const powerLevelBtnClickMethod = (btns, btn) => {
+  btns.forEach((btn) => btn.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+document.addEventListener('DOMContentLoaded', ()=>{
+  init();
+})
 
 const corner = document.getElementById('corner');
 function resizeWindow(e) {
@@ -51,73 +179,3 @@ corner.onpointerup = (e)=>{
   corner.onpointermove = null;
   corner.releasePointerCapture(e.pointerId);
 };
-
-
-/**
- * api part
- */
-
-document.addEventListener('DOMContentLoaded', function () {
-
-  const powerLevelBtns = document.querySelectorAll('.power-level-btn');
-  const rotationSwitch = document.getElementById('rotation-switch');
-  const timerInput = document.getElementById('timer-input');
-  const timerBtn = document.getElementById('timer-btn');
-  const timerDisplay = document.getElementById('timer-display');
-
-  fetch('/api/v1/power')
-    .then((res) => res.json())
-    .then((power) => {
-      powerLevelBtns[power - 1].classList.add('active');
-    });
-
-  powerLevelBtns.forEach((btn, index) => {
-    btn.addEventListener('click', () => {
-      const power = index + 1;
-      fetch('/api/v1/power', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ power }),
-      });
-    });
-  });
-
-  fetch('/api/v1/rotation')
-    .then((res) => res.json())
-    .then((rotation) => {
-      rotationSwitch.checked = rotation;
-    });
-
-  rotationSwitch.addEventListener('change', () => {
-    const rotation = rotationSwitch.checked;
-    fetch('/api/v1/rotation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ rotation }),
-    });
-  });
-
-  fetch('/api/v1/timer')
-    .then((res) => res.json())
-    .then((timer) => {
-      timerDisplay.innerText = `남은 시간 : ${timer}분`;
-    });
-
-  timerBtn.addEventListener('click', () => {
-    let value = timerInput.value;
-    if (value === '') {
-      value = 0;
-    }
-    fetch('/api/v1/timer', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ timer: value }),
-    });
-  });
-});

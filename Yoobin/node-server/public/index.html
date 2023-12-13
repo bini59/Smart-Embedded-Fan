@@ -40,8 +40,20 @@
                     <h3 class="font-semibold mb-2">타이머</h3>
                     <p class="text-sm mb-2">선풍기의 타이머를 설정</p>
                     <p id="timer-display" class="mt-2">남은 시간 : 0분</p>
-                    <input id="timer-input" type="number" min="0" class="border rounded py-2 px-4" placeholder="분 단위로 입력하세요.">
-                    <button id="timer-btn" class="bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">설정</button>
+                    <div class="flex gap-2 mb-2">
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T1</button>
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T2</button>
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T3</button>
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T4</button>
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T5</button>
+                    </div>
+                    <div class="flex gap-2 mb-2">
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T6</button>
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T7</button>
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T8</button>
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T9</button>
+                        <button class="timer-level-btn bg-gray-200 text-gray-800 font-bold py-2 px-4 rounded">T10</button>
+                    </div>
                 </div>
 
                 <div class="mb-4">
@@ -52,14 +64,14 @@
                         <div class="switch-wrapper">
                             <p class="text-sm mb-2">세기 자동모드</p>
                             <label class="auto-switch switch">
-                                <input id="rotation-auto-switch" type="checkbox" checked="">
+                                <input id="power-auto-switch" class="auto-check" type="checkbox" checked="">
                                 <span class="slider round"></span>
                             </label>
                         </div>
                         <div class="switch-wrapper">
                             <p class="text-sm mb-2">회전 자동모드</p>
                             <label class="auto-switch switch">
-                                <input id="rotation-auto-switch" type="checkbox" checked="">
+                                <input id="rotation-auto-switch" class="auto-check" type="checkbox" checked="">
                                 <span class="slider round"></span>
                             </label>
                         </div>
