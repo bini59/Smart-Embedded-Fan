@@ -19,13 +19,22 @@ const filePath = './data';
  */
 
 function getData(type) {
-  const types = ['power', 'rotation', 'timer', 'powerAuto', 'rotateAuto']
+  const types = ['power', 'rotation', 'timer'];
+
+  
 
   const data = fs.readFileSync(filePath, 'utf8');
   const lines = data.split('\n');
+  if (type == 'powerAuto') {
+   return lines[0] == '17' ? 1 : 0; 
+  }
+  if (type == 'rotateAuto') {
+    return lines[1] == '17' ? 1 : 0;
+  }
+
   const index = types.indexOf(type);
 
-  return lines[index];
+  return lines[index] == '17' ? 0 : lines[index];
 }
 
 /**
