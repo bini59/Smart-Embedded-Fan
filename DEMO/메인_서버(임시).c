@@ -383,6 +383,16 @@ void command_power() {
     }
 }
 
+int rotate_value = 0;
+int power_value = 0;
+int timer_value = 0;
+
+void save_command() {
+    FILE *fp = fopen('data', 'w');
+    fprintf(file, "%d\n%d\n%d", power_value, rotate_value, timer_value);
+    fclose();
+}
+
 int main(int argc, char **argv) {
     mqd_t mq;
     struct mq_attr attr;
@@ -415,12 +425,16 @@ int main(int argc, char **argv) {
         }
 
         if (mode == 'R') {
+            rotate_value = amount;
             command_rotate();
         } else if(mode == 'P') {
+            power_value = amount;
             command_power();
         } else if(mode == 'T') {
+            timer_value = amount;
             command_timer();
         }
+        save_command();
         usleep(100000); // 0.1초 대기
     }
 
