@@ -28,7 +28,7 @@ const initBtns = () => {
       btn.addEventListener('click', () => {
         // 자동 모드일 시 버튼 클릭 무시
         if (powerAutoSwitch.checked) return;
-        const power = index + 1;
+        const power = index;
         fetch('/api/v1/power', {
           method: 'POST',
           headers: {
@@ -78,7 +78,7 @@ const initBtns = () => {
 
     timerBtn.forEach((btn, index) => {
       btn.addEventListener('click', () => {
-        const timer = index + 1
+        const timer = index
         fetch('/api/v1/timer', {
           method: 'POST',
           headers: {

@@ -71,7 +71,7 @@ router.post('/timer', (req, res) => {
 
 router.get('/auto/power', (req, res) => {
   const powerAuto = getData('powerAuto');
-  res.send(powerAuto);
+  res.send({powerAuto});
 })
 
 router.post('/auto/power', (req, res) => {
@@ -87,7 +87,7 @@ router.post('/auto/power', (req, res) => {
 
 router.get('/auto/rotate', (req, res) => {
   const powerAuto = getData('rotateAuto');
-  res.send(powerAuto);
+  res.send({powerAuto});
 })
 
 router.post('/auto/rotate', (req, res) => {
