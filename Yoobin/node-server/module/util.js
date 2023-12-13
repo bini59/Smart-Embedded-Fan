@@ -1,4 +1,5 @@
 const fs = require('fs');
+const { exec } = require('child_process');
 
 
 const filePath = './data';
@@ -62,10 +63,17 @@ function setData(type, value) {
 
 
 function runProcess(type, mode) {
-
+  exec(`sudo ./web_control ${type}${mode}`, (err, stdout, stderr) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log(stdout);
+  });
 }
 
 module.exports = {
   getData,
   setData,
+  runProcess
 };

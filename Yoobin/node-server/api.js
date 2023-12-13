@@ -17,7 +17,7 @@
 
 const router = require('express').Router();
 
-const { getData, setData } = require('./module/util');
+const { getData, setData, runProcess } = require('./module/util');
 
 router.get('/power', (req, res) => {
   const power = getData('power');
@@ -27,7 +27,7 @@ router.get('/power', (req, res) => {
 router.post('/power', (req, res) => {
   const power = req.body.power;
   try{
-    setData('power', power);
+    runProcess('P', power);
   }
   catch(e){
     res.send({error: e})
@@ -43,7 +43,7 @@ router.get('/rotation', (req, res) => {
 router.post('/rotation', (req, res) => {
   const rotation = req.body.rotation;
   try{
-    setData('rotation', rotation ? 1 : 0);
+    runProcess('R', rotation ? 1 : 0);
   }
   catch(e){
     res.send({error: e})
@@ -60,7 +60,7 @@ router.post('/timer', (req, res) => {
   const timer = req.body.timer;
   try{
 
-    setData('timer', timer);
+    runProcess('T', timer);
   }
   catch(e){
     res.send({error: e})
@@ -76,6 +76,12 @@ router.get('/auto/power', (req, res) => {
 
 router.post('/auto/power', (req, res) => {
   const auto = req.body.auto;
+  try{
+    runProcess('P', 'A');
+  }
+  catch(e){
+    res.send({error: e})
+  }
   res.send({auto});
 })
 
@@ -86,6 +92,12 @@ router.get('/auto/rotate', (req, res) => {
 
 router.post('/auto/rotate', (req, res) => {
   const auto = req.body.auto;
+  try{
+    runProcess('R', 'A');
+  }
+  catch(e){
+    res.send({error: e})
+  }
   res.send({auto});
 })
 
