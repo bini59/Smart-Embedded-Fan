@@ -61,13 +61,11 @@ int main() {
 
     while(1) {
         printf("Waiting for new connection...\n");
-
         // 클라이언트 연결 수락
         if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
             perror("accept");
             continue;
         }
-
         printf("Connection established\n");
 
         // 클라이언트와 통신

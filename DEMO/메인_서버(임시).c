@@ -333,12 +333,16 @@ void command_rotate() {
     } else if(amount == 0) {
         auto_rotate(false);
         if (rotate_thread_running) {
+            pthread_mutex_lock(&lock);
             rotate_thread_running = false;
+            pthread_mutex_unlock(&lock);
             pthread_join(rotate_thread, NULL);
         }
     } else if(amount == AUTO){
         if (rotate_thread_running) {
+            pthread_mutex_lock(&lock);
             rotate_thread_running = false;
+            pthread_mutex_unlock(&lock);
             pthread_join(rotate_thread, NULL);
         }
         auto_rotate(true);
