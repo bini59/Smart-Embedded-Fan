@@ -33,6 +33,10 @@ float humidity = -1;
 float temperature = -1;
 int timer_duration = 0;  
 
+int rotate_value = 0;
+int power_value = 0;
+int timer_value = 0;
+
 pthread_t rotate_thread;
 pthread_t receive_thread;
 pthread_t motor_thread;
@@ -49,6 +53,14 @@ float sharedDistance = 0.0;
 bool motor_thread_flag = false;
 
 
+
+void save_command() {
+    FILE *fp = fopen("data", "w");
+    fprintf(fp, "%d\n%d\n%d", power_value, rotate_value, timer_value);
+    fclose(fp);
+}
+
+
 void auto_rotate(bool flag){
     char buffer[BUFSIZ];
     if(flag)
@@ -60,7 +72,8 @@ void auto_rotate(bool flag){
     mq_R = mq_open(mq_name, O_WRONLY);
     if(mq_R == (mqd_t)-1) {
         perror("mq_open");
-        exit(EXIT_FAILURE);
+        return;
+        // exit(EXIT_FAILURE);
     }
     // 메시지 큐로 데이터 전송
     if(mq_send(mq_R, buffer, strlen(buffer), 0) == -1) {
@@ -186,9 +199,12 @@ void *timer_func(){
         rotate_thread_running = false;
         pthread_join(rotate_thread, NULL);
     }
-
+    timer_value = 0;
+    power_value = 0;
     setMotor(0, 0);
     auto_rotate(false);
+
+    save_command();
 
     return NULL;
 }
@@ -383,15 +399,7 @@ void command_power() {
     }
 }
 
-int rotate_value = 0;
-int power_value = 0;
-int timer_value = 0;
 
-void save_command() {
-    FILE *fp = fopen('data', 'w');
-    fprintf(file, "%d\n%d\n%d", power_value, rotate_value, timer_value);
-    fclose();
-}
 
 int main(int argc, char **argv) {
     mqd_t mq;

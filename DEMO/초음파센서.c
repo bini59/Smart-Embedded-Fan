@@ -50,7 +50,7 @@ int main() {
 
     while (1) {
         float distance = measureDistance();
-        // printf("%f\n", distance);
+        printf("%f\n", distance);
         sprintf(msg, "D %f", distance);
         mq_send(mq, msg, strlen(msg), 0);
         usleep(500000); // 0.5초 대기
