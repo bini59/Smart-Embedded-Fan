@@ -54,6 +54,7 @@
 
 ### Thread - Mutex
 
+> ### 메인 서버에서 메세지 큐 읽기 스레드 생성
 ```c
 // service_1/main_server.c  421:422
 
@@ -62,6 +63,7 @@ pthread_create(&receive_thread, NULL, recv_sensor_data, NULL);
 ```
 - Main서버에서 다른작업(다른 메세지 큐로 부터 메세지를 받는 작업) message queue로 부터 받은 메세지를 읽기 위한 스레드를 생성한다.
 
+> ### 스레드 내에서 메세지 큐 읽기, mutex를 이용한 변수 접근 제한
 ```c
 // service_1/main_server.c  246:265 
 
@@ -91,6 +93,7 @@ while(1) {
 
 ### Multi Processing
 
+> ### fork를 이용한 프로세스 분리
 ```c
 // service_1/main_server.c  211:220
 
@@ -224,7 +227,7 @@ while True:
 - 사용 기술
     - Node.js
     - Express
-> ### 소스코드 적기
+> ### express 서버 기본 설정
 ```javascript
 // service_1/node-server/app.js
 
@@ -254,8 +257,10 @@ app.listen(3000, () => {
 ```
 - 미리 구현한 API를 사용해서, 각 기능들을 수행할 수 있도록 구현하였다.
   
-> ### 소스코드 적기
+> ### child_process를 사용한 C 실행
 ```javascript
+const { exec } = require('child_process');
+
 // service_1/node-server/module/util.js 63:84
 
 /**
@@ -281,7 +286,7 @@ module.exports = {
 ```
 - Node.js에서 mq로 전달받은 메시지를 실행시키기 위해, exec를 사용하여 실행시키도록 구현하였다.
   
-> ### 소스코드 적기
+> ### 웹 환경에서 API 호출
 ```javascript
  // service_1/node-server/public/script.js 32:38
 
@@ -468,7 +473,7 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 | Profile | Role | Part |
 | ------- | ---- | ---- |
 | <div align="center"><a href="https://github.com/joon6093"><img src="https://avatars.githubusercontent.com/u/118044367?v=4" width="70px;" alt=""/><br/><sub><b>송제용</b><sub></a></div> | 팀장 | 역할 배분 및 일정 관리, 리모컨 제어 및 상태 표시 기능 개발, 객체 인식 및 추적 기능 개발  |
-| <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | ... |
+| <div align="center"><a href="https://github.com/..."><img src="" width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | ... |
 | <div align="center"><a href="https://github.com/Sonny-Kor"><img src="..." width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | ...| 
 | <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>박성현</b></sub></a></div> | 팀원 | ... | 
 
