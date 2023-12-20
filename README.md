@@ -141,7 +141,8 @@ fork_dht_sensor();
 > ### Client RaspberryPi (메인 서버)  - RA 값을 이용한 송신
 
 ```c
-/* main_server.c */
+// service_1/main_server.c 64:84
+
 void auto_rotate(bool flag){
     char buffer[BUFSIZ];
     if(flag)
@@ -159,7 +160,8 @@ void auto_rotate(bool flag){
 - **`auto_rotate`** 함수는 메인 서버에서 RA 명령을 수신받았을 때, 회전자동모드를 활성화하거나 비활성화하기 위해 '1' 또는 '0'을 회전자동모드 라즈베리 파이에 전송한다.
 
 ```c
-/* TCP_rotate_connect.c */
+// service_1/TCP_rotate_connect.c 27:58
+
 // TCP 클라이언트 소켓 설정 및 연결
 if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
     printf("\n Socket creation error \n");
@@ -192,7 +194,8 @@ if (send(sock, message, strlen(message), 0) < 0) {
 > ### Server RaspberryPi (회전 자동 모드)  - 소켓을 통한 수신 및 처리
 
 ```python
-/* rotate_auto_server.py */
+// service_2/rotate_auto_server.py 166:201
+
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((host, port))
 server_socket.listen(1)
@@ -326,6 +329,8 @@ router.post('/power', (req, res) => {
 > ### 신경망 기반 얼굴 탐지
 
 ```python
+// service_2/rotate_auto_server.py 166:173
+
 # Caffe 모델을 사용한 신경망 기반 얼굴 탐지
 detector = cv2.dnn.readNetFromCaffe("deploy.prototxt.txt", "res10_300x300_ssd_iter_140000.caffemodel")
 frame = cv2.resize(frame, (300, 300))
@@ -339,6 +344,8 @@ detections = detector.forward()
 > ### 팬-틸트 메커니즘 제어
 
 ```python
+// service_2/rotate_auto_server.py 174:180
+
 # 팬(수평 회전)과 틸트(수직 회전) 각도 계산 및 조절
 tiltAngle = (objX * 0.2) + move_x
 panAngle = (objY * 0.2) + move_y
@@ -353,6 +360,8 @@ if in_range(panAngle, servoRange[0], servoRange[1]):
 > ### 멀티 쓰레딩 기술 활용
 
 ```python
+// service_2/rotate_auto_server.py 181:184
+
 # 얼굴 탐지 및 서보 제어 쓰레드 시작
 processObjectCenter = threading.Thread(target=obj_center, args=(args,))
 processObjectCenter.start()
@@ -367,6 +376,8 @@ servoControl.start()
 > ### 소켓 기반 서버를 통한 원격 제어
 
 ```python
+// service_2/rotate_auto_server.py 185:187
+
 # 소켓 서버 초기화 및 설정
 server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_socket.bind((host, port))
@@ -378,6 +389,7 @@ server_socket.listen(1)
 > ### 자동 모드 실행과 중지
 
 ```python
+// service_2/rotate_auto_server.py 188:195
 if data == '1':
     obj_tracking_running = True
     # 쓰레드 시작 로직
