@@ -61,13 +61,13 @@
 > 
 > Raspberry-PC(Web) (유빈)
 
-## 추가 기술 활용 : ****얼굴 인식 기술을 활용한 회전 자동 모드의 구현****
+## 추가 기술 활용 : 얼굴 인식 기술을 활용한 회전 자동 모드의 구현
 
 - 신경망 기반의 탐지기와 팬-틸트 메커니즘을 통해 얼굴을 정확하고 효율적으로 감지하고, 카메라 방향을 동적으로 조절한다. 
 - 이 기능은 사용자의 얼굴을 화면 중앙에 유지하며, 실시간 처리 기능을 통해 원활하고 빠른 반응을 제공한다.
 - 특히, 멀티 쓰레딩과 소켓 기반 서버를 활용한 원격 제어 기능이 핵심이다.
 
-### **신경망 기반 얼굴 탐지**
+### 신경망 기반 얼굴 탐지
 
 ```python
 # Caffe 모델을 사용한 신경망 기반 얼굴 탐지
@@ -80,7 +80,7 @@ detections = detector.forward()
 
 - OpenCV의 DNN 모듈을 사용하여 Caffe 프레임워크에서 훈련된 신경망 모델을 로드합니다. 이 모델은 카메라에서 캡처된 프레임을 처리하여 얼굴을 감지하는 데 사용된다.
 
-### **팬-틸트 메커니즘 제어**
+### 팬-틸트 메커니즘 제어
 
 ```python
 # 팬(수평 회전)과 틸트(수직 회전) 각도 계산 및 조절
@@ -119,7 +119,7 @@ server_socket.listen(1)
 
 - 서버 소켓을 초기화하여 특정 포트에서 연결 요청을 기다린다. 클라이언트로부터의 명령을 통해 시스템을 제어한다.
 
-### **자동 모드 실행과 중지**
+### 자동 모드 실행과 중지
 
 ```python
 if data == '1':
@@ -183,7 +183,7 @@ $ python3 rotate_auto_server.py # 회전자동 모드 서버 실행
 
 <br/>
 
-## 사용 방법
+## 조작 방법
 - 사용자는 `Controller` `SmartPhone` `Web`을 통해 값을 Server에게 전달할 수 있다.
 - 통신은 `Mode` + `Amount` 로 값을 Server에게 전달한다.
 - Mode에는 `P`, `R`, `T` 가 있다.
@@ -213,7 +213,7 @@ $ python3 rotate_auto_server.py # 회전자동 모드 서버 실행
 ## 팀 명단
 | Profile | Role | Part |
 | ------- | ---- | ---- |
-| <div align="center"><a href="https://github.com/ymw0407"><img src="https://avatars.githubusercontent.com/u/77202633?v=4" width="70px;" alt=""/><br/><sub><b>송제용</b><sub></a></div> | 팀장 | ... |
-| <div align="center"><a href="https://github.com/judyzero"><img src="https://avatars.githubusercontent.com/u/100904133?v=4" width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | ... |
-| <div align="center"><a href="https://github.com/Sonny-Kor"><img src="https://avatars.githubusercontent.com/u/57091983?v=4" width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | ...| 
-| <div align="center"><a href="https://github.com/bentshrimp"><img src="https://avatars.githubusercontent.com/u/39232867?v=4" width="70px;" alt=""/><br/><sub><b>박성현</b></sub></a></div> | 팀원 | ... | 
+| <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>송제용</b><sub></a></div> | 팀장 | ... |
+| <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | ... |
+| <div align="center"><a href="https://github.com/Sonny-Kor"><img src="..." width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | ...| 
+| <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>박성현</b></sub></a></div> | 팀원 | ... | 
