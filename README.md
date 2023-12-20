@@ -94,7 +94,7 @@ app.listen(3000, () => {
   console.log('server is running on port 3000');
 });
 ```
-미리 구현한 API를 사용해서, 각 기능들을 수행할 수 있도록 구현하였다.
+- 미리 구현한 API를 사용해서, 각 기능들을 수행할 수 있도록 구현하였다.
 
 ```javascript
 // service_1/node-server/module/util.js 63:84
@@ -120,7 +120,7 @@ module.exports = {
   runProcess
 };
 ```
-Node.js에서 mq로 전달받은 메시지를 실행시키기 위해, exec를 사용하여 실행시키도록 구현하였다.
+- Node.js에서 mq로 전달받은 메시지를 실행시키기 위해, exec를 사용하여 실행시키도록 구현하였다.
 
 ```javascript
  // service_1/node-server/public/script.js 32:38
@@ -133,7 +133,7 @@ fetch('/api/v1/power', {
   body: JSON.stringify({ power }),
 });
 ```
-fetch를 사용하여, API를 호출하도록 구현하였다.
+- fetch를 사용하여, API를 호출하도록 구현하였다.
 
 ```javascript
 // service_1/node-server/api.js 27:36
@@ -150,7 +150,7 @@ router.post('/power', (req, res) => {
 });
 
 ```
-호출받은 API에서 전달받은 메시지를 파싱하여, exec를 사용하여 실행시키도록 구현하였다.
+- 호출받은 API에서 전달받은 메시지를 파싱하여, exec를 사용하여 실행시키도록 구현하였다.
 
 
 ## 추가 기술 활용 : 얼굴 인식 기술을 활용한 회전 자동 모드의 구현
