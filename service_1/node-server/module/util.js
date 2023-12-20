@@ -61,7 +61,11 @@ function setData(type, value) {
   fs.writeFileSync(filePath, newData);
 }
 
-
+/**
+ * run process
+ * @param {*} type power, rotation, timer
+ * @param {*} mode on, off, auto
+ */
 function runProcess(type, mode) {
   exec(`sudo ./web_command_exec ${type}${mode}`, (err, stdout, stderr) => {
     if (err) {

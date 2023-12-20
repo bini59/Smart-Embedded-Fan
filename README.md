@@ -59,7 +59,99 @@
 > 
 > Raspberry-SmartPhone (승재)
 > 
-> Raspberry-PC(Web) (유빈)
+
+
+### Raspberry - PC (Web)
+
+사용 기술
+- Node.js
+- Express
+
+```javascript
+// service_1/node-server/app.js
+
+// express moudle을 로드.
+const express = require('express');
+const app = express();
+
+
+// router로 만들어둔 API 로드
+const api = require('./api');
+
+app.use(express.json());
+
+// '/api/v1/* 로 api 인터페이스 설정 
+app.use('/api/v1', api);
+
+app.use(express.static('public'));
+
+// '/'에서 제작한 hmtl 파일을 제공받을 수 있도록 설정
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/public/index.html');
+});
+
+app.listen(3000, () => {
+  console.log('server is running on port 3000');
+});
+```
+미리 구현한 API를 사용해서, 각 기능들을 수행할 수 있도록 구현하였다.
+
+```javascript
+// service_1/node-server/module/util.js 63:84
+
+/**
+ * run process
+ * @param {*} type power, rotation, timer
+ * @param {*} mode on, off, auto
+ */
+function runProcess(type, mode) {
+  exec(`sudo ./web_command_exec ${type}${mode}`, (err, stdout, stderr) => {
+    if (err) {
+      console.log(err);
+      return;
+    }
+    console.log(stdout);
+  });
+}
+
+module.exports = {
+  getData,
+  setData,
+  runProcess
+};
+```
+Node.js에서 mq로 전달받은 메시지를 실행시키기 위해, exec를 사용하여 실행시키도록 구현하였다.
+
+```javascript
+ // service_1/node-server/public/script.js 32:38
+
+fetch('/api/v1/power', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  body: JSON.stringify({ power }),
+});
+```
+fetch를 사용하여, API를 호출하도록 구현하였다.
+
+```javascript
+// service_1/node-server/api.js 27:36
+
+router.post('/power', (req, res) => {
+  const power = req.body.power;
+  try{
+    runProcess('P', power);
+  }
+  catch(e){
+    res.send({error: e})
+  }
+  res.send({power})
+});
+
+```
+호출받은 API에서 전달받은 메시지를 파싱하여, exec를 사용하여 실행시키도록 구현하였다.
+
 
 ## 추가 기술 활용 : 얼굴 인식 기술을 활용한 회전 자동 모드의 구현
 
