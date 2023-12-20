@@ -226,7 +226,7 @@ while True:
 - 소스코드 설명 적기
 - 소스코드 설명 적기
   
-### 3. RaspberryPi-PC(Web) 통신 (유빈)
+### 3. RaspberryPi-PC(Web) 통신
 - 사용 기술
     - Node.js
     - Express
