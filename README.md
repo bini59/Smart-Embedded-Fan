@@ -390,6 +390,7 @@ server_socket.listen(1)
 
 ```python
 // service_2/rotate_auto_server.py 188:195
+
 if data == '1':
     obj_tracking_running = True
     # 쓰레드 시작 로직
@@ -485,7 +486,7 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 | Profile | Role | Part |
 | ------- | ---- | ---- |
 | <div align="center"><a href="https://github.com/joon6093"><img src="https://avatars.githubusercontent.com/u/118044367?v=4" width="70px;" alt=""/><br/><sub><b>송제용</b><sub></a></div> | 팀장 | 역할 배분 및 일정 관리, 리모컨 제어 및 상태 표시 기능 개발, 객체 인식 및 추적 기능 개발  |
-| <div align="center"><a href="https://github.com/..."><img src="" width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | ... |
+| <div align="center"><a href="https://github.com/bini59"><img src="https://avatars.githubusercontent.com/u/51144791?v=4" width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | Node.js, Express를 이용한 서버 개발. Main Server의 Multi Process, Thread 및 Mutex 구현. |
 | <div align="center"><a href="https://github.com/Sonny-Kor"><img src="..." width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | ...| 
 | <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>박성현</b></sub></a></div> | 팀원 | ... | 
 
