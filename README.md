@@ -211,6 +211,12 @@ $ python3 rotate_auto_server.py # 회전자동 모드 서버 실행
 
 ## 시연 연상
 
+<a href="https://www.youtube.com/watch?v=0BBzzAZkF_s">
+    <img src="http://img.youtube.com/vi/0BBzzAZkF_s/0.jpg" width="100%" />
+</a>
+
+> 이미지를 클릭하면 유튜브로 이동
+
 ## 팀 명단
 | Profile | Role | Part |
 | ------- | ---- | ---- |
