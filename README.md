@@ -46,13 +46,83 @@
 ## 🔒︎ 제한 조건 구현 내용 
 ![image](https://github.com/bini59/Smart-Embedded-Fan/assets/118044367/36d2237f-e4a0-4fe1-bd81-f78fc2bccd36)
 
-> Thread - Mutex (유빈)
->
+
 > 멀프 - IPC
 >
-> 멀프(유빈)
->
 > IPC(승재)
+
+
+### Thread - Mutex
+
+```c
+// service_1/main_server.c  421:422
+
+// 메시지 큐 읽기 스레드 생성
+pthread_create(&receive_thread, NULL, recv_sensor_data, NULL);
+```
+- Main서버에서 다른작업(다른 메세지 큐로 부터 메세지를 받는 작업) message queue로 부터 받은 메세지를 읽기 위한 스레드를 생성한다.
+
+```c
+// service_1/main_server.c  246:265 
+
+while(1) {
+    str_len = mq_receive(mq, buf, sizeof(buf), NULL);
+    if (str_len == -1) {
+        perror("메시지 큐 읽기 실패");
+        continue;
+    }
+    // printf("buf : %s\nbuf[0] : %c", buf, buf[0]);
+
+    pthread_mutex_lock(&lock_receive);
+    buf[str_len] = '\0';
+    if (buf[0] == 'D') {
+        distance = atof(buf + 2);
+    } 
+    else if (buf[0] == 'H') {
+        // printf("%s\n", buf);
+        sscanf(buf + 2, "%f %f", &humidity, &temperature);
+    }
+    pthread_mutex_unlock(&lock_receive);
+    usleep(1000); // 1초 대기
+}
+```
+- 생성된 스레드에서 메세지 큐로 부터 메세지를 읽어오고, 메세지를 파싱하여 distance, humidity, temperature 변수에 저장한다. 
+- 저장하는 과정에서 다른 스레드에서 변수에 접근하지 못하도록 mutex를 사용하여 잠금을 걸어준다.
+
+### Multi Processing
+
+```c
+// service_1/main_server.c  211:220
+
+void fork_ultrasonic_sensor() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        // 초음파 센서 프로그램 실행
+        execlp("./ultrasonic_sensor", "ultrasonic_sensor", NULL);
+        exit(EXIT_FAILURE);
+    }
+}
+
+void fork_dht_sensor() {
+    pid_t pid = fork();
+    if (pid == 0) {
+        // DHT 센서 프로그램 실행
+        execlp("./dht_sensor", "dht_sensor", NULL);
+        exit(EXIT_FAILURE);
+    }
+}
+
+// service_1/main_server.c  417:419
+
+// 초음파 센서, DHT 센서 프로그램 실행
+fork_ultrasonic_sensor();
+fork_dht_sensor();
+
+```
+- 두 프로그램을 현재 프로세스에서 분리하여 실행시키도록 구현하였다.
+
+
+
 
 ## ❤️ 가산점 요소
 ### 1. RaspberryPi-RaspberryPi
