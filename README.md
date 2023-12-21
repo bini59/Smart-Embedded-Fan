@@ -47,11 +47,80 @@
 ![image](https://github.com/bini59/Smart-Embedded-Fan/assets/118044367/36d2237f-e4a0-4fe1-bd81-f78fc2bccd36)
 
 
-> 멀프 - IPC
->
-> IPC(승재)
+### 멀티프로세스 - IPC
+- 이 프로젝트에서 사용한 멀티프로세스로는 주로 `센서를 읽는 프로세스` 와 `통신을 위한 프로세스`로 이루어져있다. 
+- 아래의 코드는 서버와 클라이언트 간의 통신을 위해 생성된 프로세스 예제이다.
+> ###  TCP/IP 소켓을 사용한 서버와 클라이언트 간에 데이터 전달 
+```c
+    // 소켓 생성
+    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+        perror("socket failed");
+        exit(EXIT_FAILURE);
+    }
 
+    // 소켓 옵션 설정
+    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+        perror("setsockopt");
+        exit(EXIT_FAILURE);
+    }
 
+    address.sin_family = AF_INET;
+    address.sin_addr.s_addr = INADDR_ANY;
+    address.sin_port = htons(PORT);
+
+    // 소켓에 주소 바인딩
+    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
+        perror("bind failed");
+        exit(EXIT_FAILURE);
+    }
+
+    // 서버 소켓 대기
+    if (listen(server_fd, 3) < 0) {
+        perror("listen");
+        exit(EXIT_FAILURE);
+    }
+```
+- 서버는 TCP/IP 연결을 통해 클라이언트와 연결한 후 대기한다.
+> ### POSIX 메시지 큐를 통한 프로세스 간 통신(IPC)
+```c
+// 메시지 큐 오픈
+mq = mq_open(mq_name, O_WRONLY);
+if(mq == (mqd_t)-1) {
+    perror("mq_open");
+    exit(EXIT_FAILURE);
+}
+ while(1) {
+        printf("Waiting for new connection...\n");
+        // 클라이언트 연결 수락
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
+            perror("accept");
+            continue;
+        }
+        printf("Connection established\n");
+        // 클라이언트와 통신
+        while(1) {
+            memset(buffer, 0, 1024);
+            int valread = read(new_socket, buffer, 1024);
+            if(valread == 0) {
+                printf("Client disconnected\n");
+                break;
+            }
+            printf("Received: %s\n", buffer);
+            
+            // 메시지 큐로 데이터 전송
+            if(mq_send(mq, buffer, strlen(buffer), 0) == -1) {
+                perror("mq_send");
+                break;
+            }
+        }
+
+        close(new_socket);
+    }
+
+    // 메시지 큐 닫기
+    mq_close(mq);
+```
+- 클라이언트가 소켓을 통해 데이터를 전송할 때 메시지 큐로 메인프로세스에게 데이터를 전송한다.
 ### Thread - Mutex
 
 > ### 메인 서버에서 메세지 큐 읽기 스레드 생성
@@ -223,8 +292,98 @@ while True:
 
 ### 2. RaspberryPi-SmartPhone 통신 (승재)
 > ### 소스코드 적기
-- 소스코드 설명 적기
-- 소스코드 설명 적기
+```c
+unsigned char serialRead(const int fd) {
+    unsigned char x;
+    if (read(fd, &x, 1) != 1)
+        return -1;
+    return x;
+}
+bool isExistMode(const int fd_serial, const char *isExistmode) {
+    char mode = isExistmode[0];
+    char value = isExistmode[1] - '0';
+    char output[50];
+
+    switch (mode) {
+        case 'Q':
+            sprintf(output, "종료\n");
+            serialWriteString(fd_serial, output);
+            return true;
+        case 'T':
+            if(value == AUTO)
+                sprintf(output, "타이머모드 : 자동\n");
+            else
+                sprintf(output, "타이머모드 : %d분\n", value * 10);
+            serialWriteString(fd_serial, output);
+            return true;
+        case 'R':
+            if(value == AUTO)
+                sprintf(output, "회전모드 : 자동\n");
+            else
+                sprintf(output, "회전모드 : %d단\n", value);
+            serialWriteString(fd_serial, output);
+            return true;
+        case 'P':
+            if(value == AUTO)
+                sprintf(output, "속도모드 : 자동\n");
+            else
+                sprintf(output, "속도모드 설정 : %d단\n", value);
+            serialWriteString(fd_serial, output);
+            return true;
+        default:
+            return false;
+    }
+}
+int main() {
+    int fd_serial;
+    unsigned char dat, dat2;
+    mqd_t mq;
+    struct mq_attr attr;
+    char message[MAX_MSG_SIZE];
+
+    attr.mq_flags = 0;
+    attr.mq_maxmsg = 10;
+    attr.mq_msgsize = MAX_MSG_SIZE;
+    attr.mq_curmsgs = 0;
+
+    mq = mq_open(MQ_NAME, O_CREAT | O_WRONLY, 0644, &attr);
+    if (mq == (mqd_t)-1) {
+        perror("mq_open");
+        return 1;
+    }
+
+    if (wiringPiSetup() < 0)
+        return 1;
+
+    if ((fd_serial = serialOpen(UART2_DEV, BAUD_RATE)) < 0) {
+        printf("Unable to open serial device.\n");
+        return 1;
+    }
+
+    while (1) {
+        if (serialDataAvail(fd_serial)) {
+            dat = serialRead(fd_serial);
+            if (serialDataAvail(fd_serial)) {
+                dat2 = serialRead(fd_serial);
+                sprintf(message, "%c%c", dat, dat2);
+
+                if (isExistMode(fd_serial, message)) {
+                    if (mq_send(mq, message, 2, 0) == -1) {
+                        perror("mq_send");
+                    }
+                }
+            }
+        }
+        delay(10);
+    }
+
+    mq_close(mq);
+    return 0;
+}
+```
+- UART통신을 통하여 `serialRead`함수로 2바이트씩 데이터를 읽는다. 
+- 받은 데이터를 기반으로 `isExistMode` 함수를 호출하여 모드와 Amount를 확인한다.
+- 해당 모드에 따라 응답 메시지를 스마트폰에 전송하고, 메시지 큐에 데이터를 전송한다.
   
 ### 3. RaspberryPi-PC(Web) 통신
 - 사용 기술
@@ -257,6 +416,7 @@ app.get('/', (req, res) => {
 app.listen(3000, () => {
   console.log('server is running on port 3000');
 });
+
 ```
 - 미리 구현한 API를 사용해서, 각 기능들을 수행할 수 있도록 구현하였다.
   
