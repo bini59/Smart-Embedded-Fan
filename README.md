@@ -52,37 +52,41 @@
 - 아래의 코드는 서버와 클라이언트 간의 통신을 위해 생성된 프로세스 예제이다.
 > ###  TCP/IP 소켓을 사용한 서버와 클라이언트 간에 데이터 전달 
 ```c
-    // 소켓 생성
-    if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
-        perror("socket failed");
-        exit(EXIT_FAILURE);
-    }
+// service_1/bluetooth.c
 
-    // 소켓 옵션 설정
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
-        perror("setsockopt");
-        exit(EXIT_FAILURE);
-    }
+// 소켓 생성
+if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
+    perror("socket failed");
+    exit(EXIT_FAILURE);
+}
 
-    address.sin_family = AF_INET;
-    address.sin_addr.s_addr = INADDR_ANY;
-    address.sin_port = htons(PORT);
+// 소켓 옵션 설정
+if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT, &opt, sizeof(opt))) {
+    perror("setsockopt");
+    exit(EXIT_FAILURE);
+}
 
-    // 소켓에 주소 바인딩
-    if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
-        perror("bind failed");
-        exit(EXIT_FAILURE);
-    }
+address.sin_family = AF_INET;
+address.sin_addr.s_addr = INADDR_ANY;
+address.sin_port = htons(PORT);
 
-    // 서버 소켓 대기
-    if (listen(server_fd, 3) < 0) {
-        perror("listen");
-        exit(EXIT_FAILURE);
-    }
+// 소켓에 주소 바인딩
+if (bind(server_fd, (struct sockaddr *)&address, sizeof(address))<0) {
+    perror("bind failed");
+    exit(EXIT_FAILURE);
+}
+
+// 서버 소켓 대기
+if (listen(server_fd, 3) < 0) {
+    perror("listen");
+    exit(EXIT_FAILURE);
+}
 ```
 - 서버는 TCP/IP 연결을 통해 클라이언트와 연결한 후 대기한다.
 > ### POSIX 메시지 큐를 통한 프로세스 간 통신(IPC)
 ```c
+// service_1/bluetooth.c
+
 // 메시지 큐 오픈
 mq = mq_open(mq_name, O_WRONLY);
 if(mq == (mqd_t)-1) {
@@ -647,7 +651,7 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 | ------- | ---- | ---- |
 | <div align="center"><a href="https://github.com/joon6093"><img src="https://avatars.githubusercontent.com/u/118044367?v=4" width="70px;" alt=""/><br/><sub><b>송제용</b><sub></a></div> | 팀장 | 역할 배분 및 일정 관리, 리모컨 제어 및 상태 표시 기능 개발, 객체 인식 및 추적 기능 개발  |
 | <div align="center"><a href="https://github.com/bini59"><img src="https://avatars.githubusercontent.com/u/51144791?v=4" width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | Node.js, Express를 이용한 서버 개발. Main Server의 Multi Process, Thread 및 Mutex 구현. |
-| <div align="center"><a href="https://github.com/Sonny-Kor"><img src="..." width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | ...| 
+| <div align="center"><a href="https://github.com/Sonny-Kor"><img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/3929f0b1-1bc3-4444-af1f-9896de0d9497" width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | 프로세스간 POSIX IPC(메시지 큐)통신 구현, 모터 및 센서 구현 , 블루투스 모듈 통신 구현 | 
 | <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>박성현</b></sub></a></div> | 팀원 | ... | 
 
 
@@ -666,5 +670,12 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 
 &nbsp;또한 많은 부분에서 팀원들의 협력이 있었기에 이 프로젝트가 완성될 수 있었다고 생각한다. 리모컨과, 인공지능, 실제 선풍기의 기동, 하드웨어 연결 등은 다른 팀원들이 맡아서 진행 하였다. 하드웨어는 물론, 코드도 오류 없이 가독성이 좋도록 구현하여 주어서, 코드를 통합하는 과정에서도 큰 어려움이 없이 통합할 수 있었다. 10일간 짧은 기간의 협업이었지만, 기간 내에서 해낼 수 있는 최대한의 결과물이 나왔다고 자신한다.
 > ### 손승재
+&nbsp; 이번 프로젝트는 팀장님의 창의적인 생각과 나머지 팀원들의 의견이 합쳐져 이번 프로젝트를 시작할 수 있었다. 모두가 각자의 부분을 훌륭하게 구현해주어서 프로젝트의 결과물이 좋았던 것 같다.
 
-> ### 박성
+&nbsp; 가장 먼저, 모든 팀원들에게 감사의 말을 전하고 싶다. 송제용님은 저에게 평소에 사용할 일이 없었던 POSIX IPC 메시지 큐를 이용한 프로세스 간 통신 구조를 잘 설계할 수 있도록 도와주었다. 서버-클라이언트 구조에 대한 지식이 부족했는데, raspberry, bluetooth, Web 이 3가지의 컨트롤러에서 통신을 할수있도록 설계를 도와주셨다. 송제용 씨 덕분에 많은 것을 배울 수 있었다.
+
+&nbsp; 혼자서 메인서버에서 센서의 값을 쓰레드로 구현하였을 때 제대로 값이 읽히지않는 어려움을 겪었는데, 임유빈님께서 child-process 모듈을 활용해 이 문제를 해결해주었다. 센서의 값을 읽어오는 부분에서 기술적 난관을 극복할 수 있었다. 회로를 설계하고 선풍기를 실제로 동작할 수 있도록 멋지게 만들어주신 박성현님에게도 감사하다.
+
+&nbsp;이번 프로젝트를 통해 협력의 중요성과 의미를 깊이 깨달았다. 처음에 프로젝트를 시작하게 되었을 때, 10일안에 이 프로젝트를 마무리 할 수 있을까? 라는 걱정이 컸었다. 하지만 팀원들 간의 협력 덕분에 빠르게 프로젝트를 마무리할 수 있었고, 결과물도 최고라고 생각하며 많은 기술적인 부분에 대해서 배웠다. 프로젝트에 참여한 팀원들에게 다시 한번 감사의 마음을 전한다.
+
+> ### 박성현
