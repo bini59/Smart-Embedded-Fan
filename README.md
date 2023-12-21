@@ -38,22 +38,23 @@
 - 타이머 모드 설정 시 실행된다.
 
 ## 🔧 전체 시스템 구조도 
-![image](https://github.com/Sonny-Kor/smart-embedded-fan/assets/46300191/be3e6994-ef94-46d0-8e4b-818f452c1ad2)
+![image](https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/8eea41be-e20e-43c5-a650-502a5a5a915c)
 
 ## 🗺️ 회로구조도
-![image](https://github.com/Sonny-Kor/smart-embedded-fan/assets/46300191/b432af97-8003-47c7-a9f9-a7141962f961)
+![image](https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/a5d3fd8a-4881-4ad1-87c0-ba37a96268c2)
+
 
 ## 🔒︎ 제한 조건 구현 내용 
-![image](https://github.com/bini59/Smart-Embedded-Fan/assets/118044367/36d2237f-e4a0-4fe1-bd81-f78fc2bccd36)
+![image](https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/06bd305e-798e-4a57-924d-f4560b01f4b3)
+
 
 
 ### 멀티프로세스 - IPC
 - 이 프로젝트에서 사용한 멀티프로세스로는 주로 `센서를 읽는 프로세스` 와 `통신을 위한 프로세스`로 이루어져있다. 
 - 아래의 코드는 서버와 클라이언트 간의 통신을 위해 생성된 프로세스 예제이다.
-> ###  TCP/IP 소켓을 사용한 서버와 클라이언트 간에 데이터 전달 
+> ###  TCP/IP 소켓을 사용한 서버와 클라이언트 간에 데이터 전달 (서버)
 ```c
-// service_1/bluetooth.c
-
+// service_1/TCP_controller_connect.c 35:89
 // 소켓 생성
 if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0) {
     perror("socket failed");
@@ -81,11 +82,73 @@ if (listen(server_fd, 3) < 0) {
     perror("listen");
     exit(EXIT_FAILURE);
 }
+while(1) {
+        printf("Waiting for new connection...\n");
+        // 클라이언트 연결 수락
+        if ((new_socket = accept(server_fd, (struct sockaddr *)&address, (socklen_t*)&addrlen))<0) {
+            perror("accept");
+            continue;
+        }
+        printf("Connection established\n");
+
+        // 클라이언트와 통신
+        while(1) {
+            memset(buffer, 0, 1024);
+            int valread = read(new_socket, buffer, 1024);
+            if(valread == 0) {
+                printf("Client disconnected\n");
+                break;
+            }
+            printf("Received: %s\n", buffer);
+            
+            // 메시지 큐로 데이터 전송
+            if(mq_send(mq, buffer, strlen(buffer), 0) == -1) {
+                perror("mq_send");
+                break;
+            }
+        }
+
+        close(new_socket);
+    }
 ```
 - 서버는 TCP/IP 연결을 통해 클라이언트와 연결한 후 대기한다.
+- 클라이언트로부터 소켓을 받았을 때 메인서버로 메시지 큐를 전송한다.
+> ###  TCP/IP 소켓을 사용한 서버와 클라이언트 간에 데이터 전달 (클라이언트)
+```c
+// remote_controller/remote_client.c 165:179
+void setup() {
+     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
+        printf("\n Socket creation error \n");
+        exit(EXIT_FAILURE);
+    }
+    serv_addr.sin_family = AF_INET;
+    serv_addr.sin_port = htons(PORT);
+    if(inet_pton(AF_INET, "172.20.10.13", &serv_addr.sin_addr) <= 0) {
+        printf("\nInvalid address/ Address not supported \n");
+        exit(EXIT_FAILURE);
+    }
+    if (connect(sock, (struct sockaddr *)&serv_addr, sizeof(serv_addr)) < 0) {
+        printf("\nConnection Failed \n");
+        exit(EXIT_FAILURE);
+    }
+}
+```
+- 클라이언트는 TCP/IP 연결을 통해 서버와 연결한 후 대기한다.
+```c
+// remote_controller/remote_client.c 149 : 155
+char message[50];
+    sprintf(message, "%c%c", prefix, segmentValue);
+    if (send(sock, message, strlen(message), 0) < 0) {
+        printf("Failed to send message\n");
+    } else {
+        printf("Sent: %s\n", message);
+    }
+```
+- 클라이언트는 입력값에 따라 서버에게 소켓을 전송한다.
+ 
 > ### POSIX 메시지 큐를 통한 프로세스 간 통신(IPC)
 ```c
-// service_1/bluetooth.c
+// service_1/TCP_controller_connect.c 62:92
 
 // 메시지 큐 오픈
 mq = mq_open(mq_name, O_WRONLY);
@@ -297,6 +360,7 @@ while True:
 ### 2. RaspberryPi-SmartPhone 통신 
 > ### UART통신을 통한 스마트폰 통신 및 IPC 통신
 ```c
+// service_1/bluetooth.c
 unsigned char serialRead(const int fd) {
     unsigned char x;
     if (read(fd, &x, 1) != 1)
@@ -653,7 +717,7 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 | ------- | ---- | ---- |
 | <div align="center"><a href="https://github.com/joon6093"><img src="https://avatars.githubusercontent.com/u/118044367?v=4" width="70px;" alt=""/><br/><sub><b>송제용</b><sub></a></div> | 팀장 | 역할 배분 및 일정 관리, 리모컨 제어 및 상태 표시 기능 개발, 객체 인식 및 추적 기능 개발  |
 | <div align="center"><a href="https://github.com/bini59"><img src="https://avatars.githubusercontent.com/u/51144791?v=4" width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | Node.js, Express를 이용한 서버 개발. Main Server의 Multi Process, Thread 및 Mutex 구현. |
-| <div align="center"><a href="https://github.com/Sonny-Kor"><img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/3929f0b1-1bc3-4444-af1f-9896de0d9497" width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | 프로세스간 POSIX IPC(메시지 큐)통신 구현, 모터 및 센서 구현 , 블루투스 모듈 통신 구현 | 
+| <div align="center"><a href="https://github.com/Sonny-Kor"><img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/3929f0b1-1bc3-4444-af1f-9896de0d9497" width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | 프로세스간 POSIX IPC(메시지 큐)통신 구현, 모터 및 센서 구현 , 블루투스 모듈 통신 구현 | 
 | <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>박성현</b></sub></a></div> | 팀원 | ... | 
 
 
