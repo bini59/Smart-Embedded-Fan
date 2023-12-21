@@ -703,8 +703,8 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 
 ## 🍱 최종 결과물
 
-<img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/b5d65aa8-2b0f-441e-9ef1-2cf576802aac" width="500" height="700"/>
-<img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/36b4cf98-d1c9-4f2b-a777-fd322ced3894" width="500" height="700"/>
+<img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/b5d65aa8-2b0f-441e-9ef1-2cf576802aac" width="400" height="600"/>
+<img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/36b4cf98-d1c9-4f2b-a777-fd322ced3894" width="400" height="600"/>
 
 ## 🎥 시연 연상
 <a href="https://www.youtube.com/watch?v=0BBzzAZkF_s">
