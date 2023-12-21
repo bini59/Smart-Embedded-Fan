@@ -718,7 +718,7 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 | <div align="center"><a href="https://github.com/joon6093"><img src="https://avatars.githubusercontent.com/u/118044367?v=4" width="70px;" alt=""/><br/><sub><b>송제용</b><sub></a></div> | 팀장 | 역할 배분 및 일정 관리, 리모컨 제어 및 상태 표시 기능 개발, 객체 인식 및 추적 기능 개발  |
 | <div align="center"><a href="https://github.com/bini59"><img src="https://avatars.githubusercontent.com/u/51144791?v=4" width="70px;" alt=""/><br/><sub><b>임유빈</b></sub></a></div> | 팀원 | Node.js, Express를 이용한 서버 개발. Main Server의 Multi Process, Thread 및 Mutex 구현. |
 | <div align="center"><a href="https://github.com/Sonny-Kor"><img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/3929f0b1-1bc3-4444-af1f-9896de0d9497" width="70px;" alt=""/><br/><sub><b>손승재</b></sub></a></div> | 팀원 | 프로세스간 POSIX IPC(메시지 큐)통신 구현, 모터 및 센서 구현 , 블루투스 모듈 통신 구현 | 
-| <div align="center"><a href="https://github.com/..."><img src="..." width="70px;" alt=""/><br/><sub><b>박성현</b></sub></a></div> | 팀원 | ... | 
+| <div align="center"><a href="https://github.com/lunghyun"><img src="https://github.com/bini59/Smart-Embedded-Fan/assets/103187357/7648ce44-6136-41e5-ab6b-70a544b67318" width="70px;" alt=""/><br/><sub><b>박성현</b></sub></a></div> | 팀원 | 센서들간의 회로 구성 및 데모 결과물 제작 | 
 
 
 ## ✍🏻 프로젝트 후기
@@ -745,3 +745,9 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 &nbsp;이번 프로젝트를 통해 협력의 중요성과 의미를 깊이 깨달았다. 처음에 프로젝트를 시작하게 되었을 때, 10일안에 이 프로젝트를 마무리 할 수 있을까? 라는 걱정이 컸었다. 하지만 팀원들 간의 협력 덕분에 빠르게 프로젝트를 마무리할 수 있었고, 결과물도 최고라고 생각하며 많은 기술적인 부분에 대해서 배웠다. 프로젝트에 참여한 팀원들에게 다시 한번 감사의 마음을 전한다.
 
 > ### 박성현
+&nbsp;이번 프로젝트를 하면서 먼저 팀장의 아이디어에서 착안한 스마트 선풍기에서 가능성을 봤다. 다른 팀원들이 저마다 통신 구조와 같은 지식에 대해 기반 지식이 있는 것으로 보여 따라가야 겠다는 생각을 하였지만, 독감 격리 중 일정대로 프로젝트가 얼추 진행된 상태였기에 팀원들에게 감사와 사과의 말을 전하고 싶다.
+
+&nbsp;평소에 회로에 대해는 어렵지 않았던 터라, 데모 결과물을 위해 회로를 구성하고 센서마다 알맞은 저항을 추가하여 알맞은 회로를 구성하면서 회로에 대한 이해는 완벽히 높아졌지만, 시스템 구성에 있어서 부족하다는 것을 많이 느낀다.
+
+&nbsp;10정도의 짧은 시간동안 프로젝트를 깔끔히 끝마치게 해준 팀원들에게 감사하다. 10일이라고 믿기지 않는 구현 수준이라 팀원들을 보면서 많이 배울 수 있었다.
+
