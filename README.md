@@ -635,10 +635,12 @@ $ python3 rotate_auto_server.py # 회전자동모드 서버 실행
 
 
 ## 📆 프로젝트 일정
-![image](https://github.com/Sonny-Kor/smart-embedded-fan/assets/46300191/e05f2742-e023-47d1-99c6-19890a1c61de)
+<img width="1850" alt="image" src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/5013e793-ded0-4d70-8035-9186d639e9df">
+
 ## 🍱 최종 결과물
-<img src="https://github.com/Sonny-Kor/smart-embedded-fan/assets/46300191/8cae6907-80c1-4009-863d-0e8d9feb3906" width="500" height="700"/>
-<img src="https://github.com/Sonny-Kor/smart-embedded-fan/assets/46300191/ef432f61-e350-4e1f-9c26-0bf249833d67" width="500" height="700"/>
+
+<img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/b5d65aa8-2b0f-441e-9ef1-2cf576802aac" width="500" height="700"/>
+<img src="https://github.com/bini59/Smart-Embedded-Fan/assets/46300191/36b4cf98-d1c9-4f2b-a777-fd322ced3894" width="500" height="700"/>
 
 ## 🎥 시연 연상
 <a href="https://www.youtube.com/watch?v=0BBzzAZkF_s">
