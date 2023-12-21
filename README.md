@@ -294,8 +294,8 @@ while True:
 
 - 회전자동모드 라즈베리 파이는 TCP 서버로 작동하여 메인 서버로부터 '1' 또는 '0'을 수신하고, 이에 따라 얼굴 인식 및 팬-틸트 메커니즘 제어를 활성화하거나 비활성화한다.
 
-### 2. RaspberryPi-SmartPhone 통신 (승재)
-> ### 소스코드 적기
+### 2. RaspberryPi-SmartPhone 통신 
+> ### UART통신을 통한 스마트폰 통신 및 IPC 통신
 ```c
 unsigned char serialRead(const int fd) {
     unsigned char x;
